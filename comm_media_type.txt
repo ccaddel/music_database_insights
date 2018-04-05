@@ -1,0 +1,6 @@
+SELECT m.Name Media_Type, COUNT(*) Num_Tracks
+FROM MediaType m
+JOIN Track t
+ON m.MediaTypeId = t.MediaTypeId
+GROUP BY Media_Type
+ORDER BY num_tracks DESC;

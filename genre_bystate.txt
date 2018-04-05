@@ -1,0 +1,35 @@
+SELECT sub2.State, sub.Artist, sub.Artistid, sub2.MostPurchases
+FROM (
+	SELECT i.BillingState State, ar.ArtistID Artistid, ar.Name Artist, COUNT(*) Num_Purchases
+	FROM Invoice i
+	JOIN InvoiceLine il
+	ON il.InvoiceId = i.InvoiceId
+	JOIN Track t
+	ON il.TrackId = t.TrackId
+	JOIN Album al
+	ON al.AlbumId = t.AlbumId
+	JOIN Artist ar
+	ON al.ArtistId = ar.ArtistId
+	WHERE i.BillingCountry = "USA"
+	GROUP BY 1,2
+	) sub
+JOIN (
+		SELECT sub.State, MAX(sub.Num_Purchases) MostPurchases
+	FROM (
+		SELECT i.BillingState State, ar.ArtistID, ar.Name Artist, COUNT(*) Num_Purchases
+		FROM Invoice i
+		JOIN InvoiceLine il
+		ON il.InvoiceId = i.InvoiceId
+		JOIN Track t
+		ON il.TrackId = t.TrackId
+		JOIN Album al
+		ON al.AlbumId = t.AlbumId
+		JOIN Artist ar
+		ON al.ArtistId = ar.ArtistId
+		WHERE i.BillingCountry = "USA"
+		GROUP BY 1,2
+		) sub
+	GROUP BY 1
+	ORDER BY 2) sub2
+ON sub.State = sub2.State AND MostPurchases = Num_Purchases
+ORDER BY 2;
